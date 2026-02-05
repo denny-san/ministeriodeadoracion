@@ -100,11 +100,15 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
       await db.saveUser(newUser);
       onLogin(newUser, rememberMe);
     } catch (err: any) {
-      console.error(err);
+      console.error("Error completo de Firebase:", err);
       if (err.code === 'auth/email-already-in-use') {
         setError("Este nombre de usuario ya está en uso.");
+      } else if (err.code === 'auth/weak-password') {
+        setError("La contraseña es muy corta. Usa al menos 6 caracteres.");
+      } else if (err.code === 'auth/operation-not-allowed') {
+        setError("El registro por correo no está habilitado en Firebase Console.");
       } else {
-        setError("Error al registrarse. Intenta con otra contraseña.");
+        setError(`Error: ${err.message || "No se pudo completar el registro."}`);
       }
     } finally {
       setIsLoading(false);
