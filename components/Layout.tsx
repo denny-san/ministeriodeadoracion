@@ -250,23 +250,29 @@ const Layout: React.FC<LayoutProps> = ({ children, activeView, onNavigate, onLog
                       </div>
                     ) : (
                       notifications.map(n => {
-                        const date = typeof n.timestamp === 'string' ? new Date(n.timestamp) : n.timestamp;
+                        const date = n.timestamp?.toDate ? n.timestamp.toDate() : (typeof n.timestamp === 'string' ? new Date(n.timestamp) : new Date());
+
+                        // Map tipo to type for icon display
+                        const notifType = n.tipo === 'crear' ? 'success' : n.tipo === 'eliminar' ? 'warning' : 'info';
+
                         return (
                           <div
                             key={n.id}
                             onClick={() => markAsRead(n.id)}
-                            className={`p-5 border-b border-slate-50 dark:border-slate-800/50 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer ${!n.isRead ? 'bg-primary/5' : ''}`}
+                            className={`p-5 border-b border-slate-50 dark:border-slate-800/50 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer ${!n.leido ? 'bg-primary/5' : ''}`}
                           >
                             <div className="flex gap-4">
-                              <div className={`size-10 rounded-2xl flex items-center justify-center shrink-0 shadow-sm ${n.type === 'success' ? 'bg-green-500 text-white' :
-                                n.type === 'warning' ? 'bg-red-500 text-white' : 'bg-blue-500 text-white'}`}>
+                              <div className={`size-10 rounded-2xl flex items-center justify-center shrink-0 shadow-sm ${notifType === 'success' ? 'bg-green-500 text-white' :
+                                notifType === 'warning' ? 'bg-red-500 text-white' : 'bg-blue-500 text-white'}`}>
                                 <span className="material-symbols-outlined !text-xl">
-                                  {n.type === 'success' ? 'check_circle' : n.type === 'warning' ? 'error' : 'info'}
+                                  {notifType === 'success' ? 'check_circle' : notifType === 'warning' ? 'error' : 'info'}
                                 </span>
                               </div>
                               <div className="flex-1">
-                                <p className={`text-sm ${!n.isRead ? 'font-black text-slate-900 dark:text-white' : 'font-bold text-slate-500 dark:text-slate-400'}`}>{n.title}</p>
-                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">{n.message}</p>
+                                <p className={`text-sm ${!n.leido ? 'font-black text-slate-900 dark:text-white' : 'font-bold text-slate-500 dark:text-slate-400'}`}>
+                                  {n.tipo === 'crear' ? 'Nuevo elemento creado' : n.tipo === 'editar' ? 'Elemento actualizado' : 'Elemento eliminado'}
+                                </p>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">{n.mensaje}</p>
                                 <p className="text-[10px] font-black text-slate-400 mt-3 uppercase tracking-tighter opacity-60">
                                   {date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} • {date.toLocaleDateString([], { month: 'short', day: 'numeric' })}
                                 </p>
