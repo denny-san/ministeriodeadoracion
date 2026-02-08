@@ -25,10 +25,10 @@ const App: React.FC = () => {
     setHasMounted(true);
     console.log("📱 App: Montada en el cliente.");
 
-    // Check if Firebase config is missing
-    if (!import.meta.env.NEXT_PUBLIC_FIREBASE_API_KEY) {
-      console.error("❌ Error de Configuración: NEXT_PUBLIC_FIREBASE_API_KEY no encontrada.");
-      setInitError("Error de configuración: Faltan variables de entorno de Firebase (NEXT_PUBLIC_). Por favor, verifica la configuración en Vercel.");
+    // Check if configuration is missing (both env and fallback)
+    const env = (import.meta as any).env || {};
+    if (!env.NEXT_PUBLIC_FIREBASE_API_KEY) {
+      console.warn("⚠️ Nota: NEXT_PUBLIC_FIREBASE_API_KEY no detectada. Usando respaldo de emergencia.");
     }
   }, []);
 

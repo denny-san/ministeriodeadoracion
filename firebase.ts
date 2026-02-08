@@ -4,20 +4,28 @@ import { getFirestore, Firestore } from "firebase/firestore";
 import { getAuth, Auth } from "firebase/auth";
 import { getStorage, FirebaseStorage } from "firebase/storage";
 
-// Firebase configuration using environment variables
+// Firebase configuration using environment variables with hardcoded fallbacks
 const env = (import.meta as any).env || {};
 
 const firebaseConfig = {
-    apiKey: env.NEXT_PUBLIC_FIREBASE_API_KEY,
-    authDomain: env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-    projectId: env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-    storageBucket: env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-    appId: env.NEXT_PUBLIC_FIREBASE_APP_ID,
-    measurementId: env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
+    apiKey: env.NEXT_PUBLIC_FIREBASE_API_KEY || "AIzaSyAoLjHkXhMWoM9qp540R61gqdvXZ05JSHM",
+    authDomain: env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "ministerioadoracion-73496.firebaseapp.com",
+    projectId: env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "ministerioadoracion-73496",
+    storageBucket: env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "ministerioadoracion-73496.firebasestorage.app",
+    messagingSenderId: env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "320525219331",
+    appId: env.NEXT_PUBLIC_FIREBASE_APP_ID || "1:320525219331:web:604de89b77f62800548036",
+    measurementId: env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID || "G-F0QY7H8XT4"
 };
 
 const isClient = typeof window !== 'undefined';
+
+if (isClient) {
+    if (env.NEXT_PUBLIC_FIREBASE_API_KEY) {
+        console.log("✅ Firebase: Usando variables de entorno NEXT_PUBLIC_.");
+    } else {
+        console.warn("⚠️ Firebase: NEXT_PUBLIC_ no detectadas, usando configuración de respaldo.");
+    }
+}
 
 let app: FirebaseApp | null = null;
 let db_fs: Firestore = null as any;
