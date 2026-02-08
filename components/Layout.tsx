@@ -23,19 +23,19 @@ const Layout: React.FC<LayoutProps> = ({ children, activeView, onNavigate, onLog
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [editName, setEditName] = useState(user?.name || '');
+  const [editName, setEditName] = useState(user?.nombre || '');
   const [editInstrument, setEditInstrument] = useState(user?.instrument || '');
 
   const instruments = ['Voz', 'Piano', 'Batería', 'Bajo', 'Guitarra', 'Saxofón', 'Coros', 'Director', 'Liderazgo'];
 
   useEffect(() => {
     if (user) {
-      setEditName(user.name);
+      setEditName(user.nombre);
       setEditInstrument(user.instrument || '');
     }
   }, [user]);
 
-  const isLeader = user?.role === 'Leader' || user?.role === 'Admin';
+  const isLeader = user?.rol === 'Leader' || (user?.rol as string)?.toLowerCase() === 'lider';
 
   const handleLogout = () => {
     onLogout();
@@ -80,7 +80,7 @@ const Layout: React.FC<LayoutProps> = ({ children, activeView, onNavigate, onLog
   const handleSaveProfile = (e: React.FormEvent) => {
     e.preventDefault();
     if (onUpdateUser) {
-      onUpdateUser({ name: editName, instrument: editInstrument });
+      onUpdateUser({ nombre: editName, instrument: editInstrument });
       setIsEditingProfile(false);
       alert('Perfil actualizado con éxito');
     }
@@ -112,7 +112,7 @@ const Layout: React.FC<LayoutProps> = ({ children, activeView, onNavigate, onLog
 
           <nav className="flex flex-col gap-2">
             {menuItems
-              .filter(item => user && item.roles.includes(user.role))
+              .filter(item => user && item.roles.includes(user.rol))
               .map((item) => (
                 <button
                   key={item.id}
@@ -161,7 +161,7 @@ const Layout: React.FC<LayoutProps> = ({ children, activeView, onNavigate, onLog
 
             <nav className="flex flex-col gap-2">
               {menuItems
-                .filter(item => user && item.roles.includes(user.role))
+                .filter(item => user && item.roles.includes(user.rol))
                 .map((item) => (
                   <button
                     key={item.id}
@@ -230,7 +230,7 @@ const Layout: React.FC<LayoutProps> = ({ children, activeView, onNavigate, onLog
                 onClick={() => { setShowProfileMenu(!showProfileMenu); setShowNotifications(false); setIsEditingProfile(false); }}
                 className={`h-9 w-9 md:h-11 md:w-11 rounded-xl border-2 shadow-sm overflow-hidden hover:ring-4 hover:ring-primary/10 transition-all ${showProfileMenu ? 'ring-4 ring-primary/20 border-primary' : 'border-white dark:border-slate-800'}`}
               >
-                <img className="w-full h-full object-cover" src={user?.avatar || "https://picsum.photos/seed/user/100/100"} alt="User Profile" />
+                <img className="w-full h-full object-cover" src={user?.fotoPerfil || "https://picsum.photos/seed/user/100/100"} alt="User Profile" />
               </button>
 
               <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleFileChange} />
@@ -287,13 +287,13 @@ const Layout: React.FC<LayoutProps> = ({ children, activeView, onNavigate, onLog
                     <>
                       <div className="p-8 text-center bg-slate-50/50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800">
                         <div className="relative size-20 mx-auto mb-4">
-                          <img src={user?.avatar} className="size-full rounded-[24px] object-cover shadow-2xl ring-4 ring-white dark:ring-slate-800" alt="Avatar" />
+                          <img src={user?.fotoPerfil} className="size-full rounded-[24px] object-cover shadow-2xl ring-4 ring-white dark:ring-slate-800" alt="Avatar" />
                           <button onClick={triggerFileUpload} className="absolute -right-2 -bottom-2 size-9 bg-primary text-white rounded-xl shadow-lg flex items-center justify-center hover:scale-110 active:scale-95 transition-all">
                             <span className="material-symbols-outlined !text-xl">photo_camera</span>
                           </button>
                         </div>
-                        <h4 className="text-lg font-black text-slate-900 dark:text-white tracking-tight">{user?.name}</h4>
-                        <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mt-2 inline-block px-3 py-1 bg-primary/10 rounded-full">{user?.instrument || user?.role}</p>
+                        <h4 className="text-lg font-black text-slate-900 dark:text-white tracking-tight">{user?.nombre}</h4>
+                        <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mt-2 inline-block px-3 py-1 bg-primary/10 rounded-full">{user?.instrument || user?.rol}</p>
                       </div>
                       <div className="p-3 space-y-1">
                         <button onClick={() => setIsEditingProfile(true)} className="w-full flex items-center gap-4 px-4 py-3.5 text-xs font-black text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-2xl transition-all uppercase tracking-widest">
