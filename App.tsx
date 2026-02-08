@@ -36,6 +36,13 @@ const App: React.FC = () => {
   useEffect(() => {
     if (!hasMounted) return;
 
+    if (!auth) {
+      console.error("❌ Auth: El objeto 'auth' no está disponible.");
+      setInitError("Firebase Auth no pudo ser inicializado. Verifica las variables de entorno NEXT_PUBLIC_.");
+      setIsInitialized(true);
+      return;
+    }
+
     console.log("🔐 App: Iniciando escucha de autenticación...");
     const unsub = onAuthStateChanged(auth, async (fbUser) => {
       console.log("👤 Auth State Changed:", fbUser ? `Usuario ${fbUser.uid} detectado` : "Sin usuario");
