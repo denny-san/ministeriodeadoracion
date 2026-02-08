@@ -135,16 +135,32 @@ export const db = {
         return url;
     },
 
-    // ---- LEGACY COMPATIBILITY (Temporary) ----
-    getConfirmations: () => {
-        const data = localStorage.getItem('service_confirmations');
-        return data ? JSON.parse(data) : {};
+    // ---- CONFIRMATIONS (Real-time) ----
+    subscribeConfirmations: (callback: (confirmations: Record<string, any>) => void) => {
+        const q = collection(db_fs, "confirmations");
+        return onSnapshot(q, (snapshot) => {
+            const confirmationsMap: Record<string, any> = {};
+            snapshot.docs.forEach(doc => {
+                confirmationsMap[doc.id] = doc.data();
+            });
+            callback(confirmationsMap);
+        });
     },
-    saveConfirmation: (planId: string, userId: string, status: boolean) => {
-        const confirmations = db.getConfirmations();
-        const updated = { ...confirmations, [`${planId}_${userId}`]: status };
-        localStorage.setItem('service_confirmations', JSON.stringify(updated));
-        window.dispatchEvent(new Event('storage'));
-        return updated;
+
+    saveConfirmation: async (eventId: string, userId: string, status: boolean) => {
+        const confirmationId = `${eventId}_${userId}`;
+        await setDoc(doc(db_fs, "confirmations", confirmationId), {
+            eventId,
+            userId,
+            status,
+            timestamp: serverTimestamp()
+        });
+    },
+
+    getConfirmation: async (eventId: string, userId: string): Promise<boolean> => {
+        const confirmationId = `${eventId}_${userId}`;
+        const docRef = doc(db_fs, "confirmations", confirmationId);
+        const docSnap = await getDoc(docRef);
+        return docSnap.exists() ? docSnap.data().status : false;
     }
 };

@@ -28,24 +28,34 @@ const MusicianView: React.FC<MusicianViewProps> = ({ onNavigate, onLogout, user,
       setSongs(sngs);
     });
 
-    setConfirmations(db.getConfirmations());
+    // Real-time confirmations subscription
+    const unsubConfirmations = db.subscribeConfirmations((confirmationsMap) => {
+      const statusMap: Record<string, boolean> = {};
+      Object.entries(confirmationsMap).forEach(([key, value]) => {
+        statusMap[key] = value.status;
+      });
+      setConfirmations(statusMap);
+    });
 
     return () => {
       unsubEvents();
       unsubSongs();
+      unsubConfirmations();
     };
   }, []);
 
-  const handleConfirm = (eventId: string) => {
+  const handleConfirm = async (eventId: string) => {
     const userId = user?.id || '';
     const currentStatus = confirmations[`${eventId}_${userId}`] || false;
     const newStatus = !currentStatus;
 
-    const updated = db.saveConfirmation(eventId, userId, newStatus);
-    setConfirmations(updated);
+    // Save to Firestore (real-time sync)
+    await db.saveConfirmation(eventId, userId, newStatus);
 
     if (newStatus) {
       triggerNotification('crear', `${user?.nombre} ha confirmado su asistencia.`, 'lideres');
+    } else {
+      triggerNotification('editar', `${user?.nombre} ha cancelado su confirmación.`, 'lideres');
     }
   };
 

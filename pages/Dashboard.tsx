@@ -57,13 +57,20 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, onLogout, user, onUpd
       setStats(prev => ({ ...prev, songs: sngs.length }));
     });
 
-    // Load static confirmations for now (legacy)
-    setConfirmations(db.getConfirmations());
+    // Real-time confirmations subscription
+    const unsubConfirmations = db.subscribeConfirmations((confirmationsMap) => {
+      const statusMap: Record<string, boolean> = {};
+      Object.entries(confirmationsMap).forEach(([key, value]) => {
+        statusMap[key] = value.status;
+      });
+      setConfirmations(statusMap);
+    });
 
     return () => {
       unsubUsers();
       unsubEvents();
       unsubSongs();
+      unsubConfirmations();
     };
   }, []);
 
