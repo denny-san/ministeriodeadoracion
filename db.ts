@@ -57,54 +57,115 @@ export const db = {
 
     // ---- EVENTS ----
     subscribeEvents: (callback: (events: CalendarEvent[]) => void) => {
-        const q = query(collection(db_fs, "events"), orderBy("fecha", "asc"));
-        return onSnapshot(q, (snapshot) => {
-            callback(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as CalendarEvent)));
-        });
+        if (!db_fs) {
+            console.error("❌ Firestore no inicializado en subscribeEvents");
+            return () => { };
+        }
+        try {
+            const q = query(collection(db_fs, "events"), orderBy("fecha", "asc"));
+            return onSnapshot(q, (snapshot) => {
+                callback(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as CalendarEvent)));
+            });
+        } catch (error) {
+            console.error("❌ Error en subscribeEvents:", error);
+            return () => { };
+        }
     },
 
     saveEvent: async (event: Partial<CalendarEvent>) => {
-        if (event.id) {
-            await setDoc(doc(db_fs, "events", event.id), {
-                ...event,
-                timestamp: serverTimestamp()
-            }, { merge: true });
-        } else {
-            await addDoc(collection(db_fs, "events"), {
-                ...event,
-                timestamp: serverTimestamp()
-            });
+        if (!db_fs) {
+            console.error("❌ Firestore no inicializado en saveEvent");
+            alert("Error: No se pudo conectar a la base de datos. Verifica tu conexión.");
+            return;
+        }
+        try {
+            console.log("💾 Guardando evento:", event);
+            if (event.id) {
+                await setDoc(doc(db_fs, "events", event.id), {
+                    ...event,
+                    timestamp: serverTimestamp()
+                }, { merge: true });
+                console.log("✅ Evento actualizado:", event.id);
+            } else {
+                const docRef = await addDoc(collection(db_fs, "events"), {
+                    ...event,
+                    timestamp: serverTimestamp()
+                });
+                console.log("✅ Evento creado con ID:", docRef.id);
+            }
+        } catch (error) {
+            console.error("❌ Error guardando evento:", error);
+            alert("Error al guardar el evento. Por favor intenta de nuevo.");
         }
     },
 
     deleteEvent: async (id: string) => {
-        await deleteDoc(doc(db_fs, "events", id));
+        if (!db_fs) {
+            console.error("❌ Firestore no inicializado en deleteEvent");
+            return;
+        }
+        try {
+            await deleteDoc(doc(db_fs, "events", id));
+            console.log("✅ Evento eliminado:", id);
+        } catch (error) {
+            console.error("❌ Error eliminando evento:", error);
+        }
     },
 
     // ---- SONGS ----
     subscribeSongs: (callback: (songs: Song[]) => void) => {
-        const q = query(collection(db_fs, "songs"), orderBy("timestamp", "desc"));
-        return onSnapshot(q, (snapshot) => {
-            callback(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Song)));
-        });
+        if (!db_fs) {
+            console.error("❌ Firestore no inicializado en subscribeSongs");
+            return () => { };
+        }
+        try {
+            const q = query(collection(db_fs, "songs"), orderBy("timestamp", "desc"));
+            return onSnapshot(q, (snapshot) => {
+                callback(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Song)));
+            });
+        } catch (error) {
+            console.error("❌ Error en subscribeSongs:", error);
+            return () => { };
+        }
     },
 
     saveSong: async (song: Partial<Song>) => {
-        if (song.id) {
-            await setDoc(doc(db_fs, "songs", song.id), {
-                ...song,
-                timestamp: serverTimestamp()
-            }, { merge: true });
-        } else {
-            await addDoc(collection(db_fs, "songs"), {
-                ...song,
-                timestamp: serverTimestamp()
-            });
+        if (!db_fs) {
+            console.error("❌ Firestore no inicializado en saveSong");
+            return;
+        }
+        try {
+            console.log("💾 Guardando canción:", song);
+            if (song.id) {
+                await setDoc(doc(db_fs, "songs", song.id), {
+                    ...song,
+                    timestamp: serverTimestamp()
+                }, { merge: true });
+                console.log("✅ Canción actualizada:", song.id);
+            } else {
+                const docRef = await addDoc(collection(db_fs, "songs"), {
+                    ...song,
+                    timestamp: serverTimestamp()
+                });
+                console.log("✅ Canción creada con ID:", docRef.id);
+            }
+        } catch (error) {
+            console.error("❌ Error guardando canción:", error);
+            alert("Error al guardar la canción. Por favor intenta de nuevo.");
         }
     },
 
     deleteSong: async (id: string) => {
-        await deleteDoc(doc(db_fs, "songs", id));
+        if (!db_fs) {
+            console.error("❌ Firestore no inicializado en deleteSong");
+            return;
+        }
+        try {
+            await deleteDoc(doc(db_fs, "songs", id));
+            console.log("✅ Canción eliminada:", id);
+        } catch (error) {
+            console.error("❌ Error eliminando canción:", error);
+        }
     },
 
     // ---- NOTIFICATIONS ----
@@ -137,30 +198,58 @@ export const db = {
 
     // ---- CONFIRMATIONS (Real-time) ----
     subscribeConfirmations: (callback: (confirmations: Record<string, any>) => void) => {
-        const q = collection(db_fs, "confirmations");
-        return onSnapshot(q, (snapshot) => {
-            const confirmationsMap: Record<string, any> = {};
-            snapshot.docs.forEach(doc => {
-                confirmationsMap[doc.id] = doc.data();
+        if (!db_fs) {
+            console.error("❌ Firestore no inicializado en subscribeConfirmations");
+            return () => { };
+        }
+        try {
+            const q = collection(db_fs, "confirmations");
+            return onSnapshot(q, (snapshot) => {
+                const confirmationsMap: Record<string, any> = {};
+                snapshot.docs.forEach(doc => {
+                    confirmationsMap[doc.id] = doc.data();
+                });
+                callback(confirmationsMap);
             });
-            callback(confirmationsMap);
-        });
+        } catch (error) {
+            console.error("❌ Error en subscribeConfirmations:", error);
+            return () => { };
+        }
     },
 
     saveConfirmation: async (eventId: string, userId: string, status: boolean) => {
-        const confirmationId = `${eventId}_${userId}`;
-        await setDoc(doc(db_fs, "confirmations", confirmationId), {
-            eventId,
-            userId,
-            status,
-            timestamp: serverTimestamp()
-        });
+        if (!db_fs) {
+            console.error("❌ Firestore no inicializado en saveConfirmation");
+            return;
+        }
+        try {
+            const confirmationId = `${eventId}_${userId}`;
+            console.log("💾 Guardando confirmación:", { eventId, userId, status });
+            await setDoc(doc(db_fs, "confirmations", confirmationId), {
+                eventId,
+                userId,
+                status,
+                timestamp: serverTimestamp()
+            });
+            console.log("✅ Confirmación guardada:", confirmationId);
+        } catch (error) {
+            console.error("❌ Error guardando confirmación:", error);
+        }
     },
 
     getConfirmation: async (eventId: string, userId: string): Promise<boolean> => {
-        const confirmationId = `${eventId}_${userId}`;
-        const docRef = doc(db_fs, "confirmations", confirmationId);
-        const docSnap = await getDoc(docRef);
-        return docSnap.exists() ? docSnap.data().status : false;
+        if (!db_fs) {
+            console.error("❌ Firestore no inicializado en getConfirmation");
+            return false;
+        }
+        try {
+            const confirmationId = `${eventId}_${userId}`;
+            const docRef = doc(db_fs, "confirmations", confirmationId);
+            const docSnap = await getDoc(docRef);
+            return docSnap.exists() ? docSnap.data().status : false;
+        } catch (error) {
+            console.error("❌ Error obteniendo confirmación:", error);
+            return false;
+        }
     }
 };
