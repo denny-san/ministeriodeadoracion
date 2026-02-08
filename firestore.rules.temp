@@ -1,0 +1,11 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // REGLAS TEMPORALES PARA DEBUGGING
+    // ⚠️ ESTAS REGLAS SON MUY PERMISIVAS - SOLO PARA PRUEBAS
+    // Permitir todo para usuarios autenticados
+    match /{document=**} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}
