@@ -1,20 +1,66 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Ministerio de Adoración - Portal de Gestión
 
-# Run and deploy your AI Studio app
+## Variables de Entorno Requeridas para Vercel
 
-This contains everything you need to run your app locally.
+Para que la aplicación funcione correctamente en producción (Vercel), debes configurar las siguientes variables de entorno en el panel de Vercel:
 
-View your app in AI Studio: https://ai.studio/apps/drive/1XgY-6sDk2tGQ64wgca5OWwGouqVthlwG
+```
+NEXT_PUBLIC_FIREBASE_API_KEY=AIzaSyAoLjHkXhMWoM9qp540R61gqdvXZ05JSHM
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=ministerioadoracion-73496.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=ministerioadoracion-73496
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=ministerioadoracion-73496.firebasestorage.app
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=320525219331
+NEXT_PUBLIC_FIREBASE_APP_ID=1:320525219331:web:604de89b77f62800548036
+NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=G-F0QY7H8XT4
+```
 
-## Run Locally
+### Cómo configurar en Vercel:
 
-**Prerequisites:**  Node.js
+1. Ve a tu proyecto en Vercel
+2. Settings → Environment Variables
+3. Agrega cada variable con su valor correspondiente
+4. Selecciona "Production", "Preview" y "Development"
+5. Guarda y redeploy
 
+## Desarrollo Local
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+Para desarrollo local, las variables ya están configuradas en `.env.local`.
+
+```bash
+npm install
+npm run dev
+```
+
+## Estructura del Proyecto
+
+- **App.tsx**: Punto de entrada principal con manejo de autenticación
+- **firebase.ts**: Configuración de Firebase (Auth, Firestore, Storage)
+- **db.ts**: Funciones de base de datos (CRUD operations)
+- **components/Layout.tsx**: Layout principal con sidebar y navegación
+- **pages/**: Vistas de la aplicación (Dashboard, Calendar, Team, etc.)
+- **context/**: Contextos de React (Notificaciones)
+
+## Características
+
+✅ Autenticación con Firebase Auth
+✅ Base de datos en tiempo real con Firestore
+✅ Almacenamiento de imágenes con Firebase Storage
+✅ Panel de líder con estadísticas y gestión
+✅ Panel de músico con agenda y confirmaciones
+✅ Sistema de notificaciones en tiempo real
+✅ Gestión de eventos y calendario
+✅ Gestión de equipo y músicos
+✅ Responsive design (móvil y desktop)
+
+## Roles de Usuario
+
+- **Leader**: Acceso completo a gestión de equipo, eventos, canciones
+- **Musician**: Vista de agenda personal, confirmación de asistencia
+
+## Tecnologías
+
+- React 19
+- TypeScript
+- Firebase (Auth, Firestore, Storage)
+- Vite
+- Tailwind CSS (estilos inline)
