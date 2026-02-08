@@ -25,9 +25,15 @@ import { User, CalendarEvent, Song, MinistryNotification } from "./types";
 export const db = {
     // ---- USERS ----
     getUsers: async (): Promise<User[]> => {
-        const q = collection(db_fs, "users");
-        const snapshot = await getDocs(q);
-        return snapshot.docs.map(doc => doc.data() as User);
+        if (!db_fs) return [];
+        try {
+            const q = collection(db_fs, "users");
+            const snapshot = await getDocs(q);
+            return snapshot.docs.map(doc => doc.data() as User);
+        } catch (error) {
+            console.error("Firestore Error in getUsers:", error);
+            return [];
+        }
     },
 
     subscribeUsers: (callback: (users: User[]) => void) => {

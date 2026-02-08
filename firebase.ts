@@ -1,26 +1,38 @@
 
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApps, getApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { getStorage } from "firebase/storage";
 
-// Your web app's Firebase configuration
+// Firebase configuration using environment variables
 const firebaseConfig = {
-    apiKey: "AIzaSyAoLjHkXhMWoM9qp540R61gqdvXZ05JSHM",
-    authDomain: "ministerioadoracion-73496.firebaseapp.com",
-    projectId: "ministerioadoracion-73496",
-    storageBucket: "ministerioadoracion-73496.firebasestorage.app",
-    messagingSenderId: "320525219331",
-    appId: "1:320525219331:web:604de89b77f62800548036",
-    measurementId: "G-F0QY7H8XT4"
+    apiKey: import.meta.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+    authDomain: import.meta.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+    projectId: import.meta.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+    storageBucket: import.meta.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: import.meta.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+    appId: import.meta.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+    measurementId: import.meta.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+// Check if Firebase is already initialized to avoid errors during HMR
+// and ensure we are only running on the client (browser)
+const isClient = typeof window !== 'undefined';
 
-// Initialize Services
-export const db_fs = getFirestore(app);
-export const auth = getAuth(app);
-export const storage = getStorage(app);
+if (isClient) {
+    console.log("🔥 Firebase: Inicializando en el cliente...");
+    if (!firebaseConfig.apiKey) {
+        console.error("❌ Firebase: Las variables de entorno NEXT_PUBLIC_ no están configuradas correctamente.");
+    }
+}
+
+const app = isClient
+    ? (getApps().length === 0 ? initializeApp(firebaseConfig) : getApp())
+    : null as any;
+
+// Initialize Services (Only if app is available)
+export const db_fs = isClient ? getFirestore(app) : null as any;
+export const auth = isClient ? getAuth(app) : null as any;
+export const storage = isClient ? getStorage(app) : null as any;
 
 export default app;
