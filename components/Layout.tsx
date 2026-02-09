@@ -63,14 +63,43 @@ const Layout: React.FC<LayoutProps> = ({ children, activeView, onNavigate, onLog
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file && onUpdateAvatar) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64String = reader.result as string;
-        onUpdateAvatar(base64String);
-      };
-      reader.readAsDataURL(file);
+    if (!file) {
+      console.warn("⚠️ No file selected");
+      return;
     }
+
+    // Validar que sea una imagen
+    if (!file.type.startsWith('image/')) {
+      alert('Por favor selecciona una imagen válida');
+      return;
+    }
+
+    if (!onUpdateAvatar) {
+      console.error("❌ onUpdateAvatar no disponible");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      try {
+        const base64String = reader.result as string;
+        console.log("📸 Foto convertida a base64, subiendo...");
+        onUpdateAvatar(base64String);
+        alert('✅ Foto de perfil actualizada');
+        // Limpiar el input para permitir seleccionar la misma foto nuevamente
+        e.target.value = '';
+      } catch (error) {
+        console.error("❌ Error procesando foto:", error);
+        alert('Error al procesar la foto');
+      }
+    };
+
+    reader.onerror = () => {
+      console.error("❌ Error leyendo archivo");
+      alert('Error al leer la imagen');
+    };
+
+    reader.readAsDataURL(file);
   };
 
   const triggerFileUpload = () => {

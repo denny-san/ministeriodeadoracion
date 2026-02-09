@@ -112,11 +112,22 @@ const App: React.FC = () => {
   }, [currentView, user]);
 
   const updateAvatar = async (newAvatarBase64: string) => {
-    if (user) {
+    if (!user) {
+      console.error("❌ Usuario no autenticado para actualizar avatar");
+      alert("Error: Usuario no autenticado");
+      return;
+    }
+
+    try {
+      console.log("📸 Iniciando actualización de foto de perfil...");
       const downloadUrl = await db.uploadProfilePhoto(user.id, newAvatarBase64);
       const updatedUser = { ...user, fotoPerfil: downloadUrl };
       await db.saveUser(updatedUser);
       setUser(updatedUser);
+      console.log("✅ Foto de perfil actualizada exitosamente");
+    } catch (error) {
+      console.error("❌ Error actualizando foto de perfil:", error);
+      alert(`Error al actualizar foto: ${error instanceof Error ? error.message : 'Error desconocido'}`);
     }
   };
 

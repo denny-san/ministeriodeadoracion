@@ -224,10 +224,21 @@ export const db = {
 
     // ---- STORAGE ----
     uploadProfilePhoto: async (userId: string, base64: string): Promise<string> => {
-        const storageRef = ref(storage, `users/${userId}/photo.jpg`);
-        await uploadString(storageRef, base64, 'data_url');
-        const url = await getDownloadURL(storageRef);
-        return url;
+        if (!storage) {
+            console.error("❌ Firebase Storage no inicializado");
+            throw new Error("Storage no disponible");
+        }
+        try {
+            console.log("📸 Subiendo foto de perfil...");
+            const storageRef = ref(storage, `users/${userId}/photo.jpg`);
+            await uploadString(storageRef, base64, 'data_url');
+            const url = await getDownloadURL(storageRef);
+            console.log("✅ Foto subida exitosamente:", url);
+            return url;
+        } catch (error) {
+            console.error("❌ Error subiendo foto:", error);
+            throw error;
+        }
     },
 
     // ---- CONFIRMATIONS (Real-time) ----
