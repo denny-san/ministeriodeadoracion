@@ -29,7 +29,11 @@ service cloud.firestore {
     // Notificaciones: Lectura para todos autenticados, escritura para líderes
     match /notifications/{notificationId} {
       allow read: if request.auth != null;
-      allow create: if request.auth != null;
+      // Solo líderes pueden crear o borrar notificaciones
+      allow create: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.rol == 'Leader';
+      allow delete: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.rol == 'Leader';
+      // Permitir actualizaciones sencillas (ej. marcar como leido) para usuarios autenticados,
+      // otras actualizaciones más complejas deben ser realizadas por líderes.
       allow update: if request.auth != null;
     }
   }

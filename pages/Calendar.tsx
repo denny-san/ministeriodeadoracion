@@ -72,6 +72,7 @@ const Calendar: React.FC<CalendarProps> = ({ onNavigate, onLogout, user, onUpdat
 
   const handleSaveEvent = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isLeader) return;
     if (!eventForm.titulo || !selectedDate) return;
 
     const eventToSave: Partial<CalendarEvent> = {
@@ -209,17 +210,17 @@ const Calendar: React.FC<CalendarProps> = ({ onNavigate, onLogout, user, onUpdat
             <form onSubmit={handleSaveEvent} className="p-6 md:p-12 pt-0 space-y-4 md:space-y-8">
               <div className="space-y-1 md:space-y-2">
                 <label className="text-[8px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4 md:ml-6">Título de la Actividad</label>
-                <input required className="w-full px-6 md:px-10 py-4 md:py-6 rounded-2xl md:rounded-[32px] bg-slate-50 dark:bg-slate-800 border-none text-slate-900 dark:text-white placeholder:text-slate-400 text-sm md:text-base font-bold transition-all outline-none shadow-inner" value={eventForm.titulo} onChange={(e) => setEventForm({ ...eventForm, titulo: e.target.value })} placeholder="Ej. Culto de Avivamiento" />
+                <input required disabled={!isLeader} className="w-full px-6 md:px-10 py-4 md:py-6 rounded-2xl md:rounded-[32px] bg-slate-50 dark:bg-slate-800 border-none text-slate-900 dark:text-white placeholder:text-slate-400 text-sm md:text-base font-bold transition-all outline-none shadow-inner" value={eventForm.titulo} onChange={(e) => setEventForm({ ...eventForm, titulo: e.target.value })} placeholder="Ej. Culto de Avivamiento" />
               </div>
 
               <div className="grid grid-cols-2 gap-3 md:gap-6">
                 <div className="space-y-1 md:space-y-2">
                   <label className="text-[8px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4 md:ml-6">Hora</label>
-                  <input type="time" className="w-full px-6 md:px-10 py-4 md:py-6 rounded-2xl md:rounded-[32px] bg-slate-50 dark:bg-slate-800 border-none text-slate-900 dark:text-white text-sm md:text-base font-bold outline-none shadow-inner" value={eventForm.hora} onChange={(e) => setEventForm({ ...eventForm, hora: e.target.value })} />
+                  <input type="time" disabled={!isLeader} className="w-full px-6 md:px-10 py-4 md:py-6 rounded-2xl md:rounded-[32px] bg-slate-50 dark:bg-slate-800 border-none text-slate-900 dark:text-white text-sm md:text-base font-bold outline-none shadow-inner" value={eventForm.hora} onChange={(e) => setEventForm({ ...eventForm, hora: e.target.value })} />
                 </div>
                 <div className="space-y-1 md:space-y-2">
                   <label className="text-[8px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4 md:ml-6">Tipo</label>
-                  <select className="w-full px-6 md:px-10 py-4 md:py-6 rounded-2xl md:rounded-[32px] bg-slate-50 dark:bg-slate-800 border-none text-slate-900 dark:text-white text-sm md:text-base font-bold outline-none appearance-none cursor-pointer shadow-inner" value={eventForm.tipo} onChange={(e) => setEventForm({ ...eventForm, tipo: e.target.value as any })}>
+                  <select disabled={!isLeader} className="w-full px-6 md:px-10 py-4 md:py-6 rounded-2xl md:rounded-[32px] bg-slate-50 dark:bg-slate-800 border-none text-slate-900 dark:text-white text-sm md:text-base font-bold outline-none appearance-none cursor-pointer shadow-inner" value={eventForm.tipo} onChange={(e) => setEventForm({ ...eventForm, tipo: e.target.value as any })}>
                     {EVENT_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
                   </select>
                 </div>
@@ -227,18 +228,22 @@ const Calendar: React.FC<CalendarProps> = ({ onNavigate, onLogout, user, onUpdat
 
               <div className="space-y-1 md:space-y-2">
                 <label className="text-[8px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4 md:ml-6">Detalles Adicionales</label>
-                <textarea className="w-full px-6 md:px-10 py-4 md:py-6 rounded-3xl md:rounded-[40px] bg-slate-50 dark:bg-slate-800 border-none text-slate-900 dark:text-white placeholder:text-slate-400 text-sm md:text-base font-bold transition-all resize-none outline-none shadow-inner" rows={3} value={eventForm.notas || ''} onChange={(e) => setEventForm({ ...eventForm, notas: e.target.value })} placeholder="Instrucciones para el equipo..." />
+                <textarea disabled={!isLeader} className="w-full px-6 md:px-10 py-4 md:py-6 rounded-3xl md:rounded-[40px] bg-slate-50 dark:bg-slate-800 border-none text-slate-900 dark:text-white placeholder:text-slate-400 text-sm md:text-base font-bold transition-all resize-none outline-none shadow-inner" rows={3} value={eventForm.notas || ''} onChange={(e) => setEventForm({ ...eventForm, notas: e.target.value })} placeholder="Instrucciones para el equipo..." />
               </div>
 
               <div className="pt-4 md:pt-8 flex gap-3 md:gap-6">
-                {selectedEvent && (
+                {isLeader && selectedEvent && (
                   <button type="button" onClick={() => handleDeleteEvent(selectedEvent.id)} className="size-14 md:size-20 flex items-center justify-center rounded-2xl md:rounded-[32px] bg-rose-50 text-rose-500 hover:bg-rose-500 hover:text-white transition-all shadow-xl group">
                     <span className="material-symbols-outlined !text-xl md:!text-3xl">delete</span>
                   </button>
                 )}
-                <button type="submit" className="flex-1 py-4 md:py-6 bg-primary text-white rounded-2xl md:rounded-[32px] text-[10px] md:text-xs font-black uppercase tracking-[0.2em] shadow-2xl hover:scale-[1.02] transition-all">
-                  {selectedEvent ? 'GUARDAR CAMBIOS' : 'CONFIRMAR ACTIVIDAD'}
-                </button>
+                {isLeader ? (
+                  <button type="submit" className="flex-1 py-4 md:py-6 bg-primary text-white rounded-2xl md:rounded-[32px] text-[10px] md:text-xs font-black uppercase tracking-[0.2em] shadow-2xl hover:scale-[1.02] transition-all">
+                    {selectedEvent ? 'GUARDAR CAMBIOS' : 'CONFIRMAR ACTIVIDAD'}
+                  </button>
+                ) : (
+                  <div className="flex-1 py-4 md:py-6 rounded-2xl md:rounded-[32px] bg-slate-50 text-slate-500 text-center font-black">Solo lectura</div>
+                )}
               </div>
             </form>
           </div>

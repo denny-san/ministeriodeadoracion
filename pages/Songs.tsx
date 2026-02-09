@@ -16,6 +16,7 @@ const Songs: React.FC<SongsProps> = ({ onNavigate, onLogout, user, onUpdateAvata
   const [songs, setSongs] = useState<Song[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingSong, setEditingSong] = useState<Partial<Song>>({});
+  const isLeader = user?.rol === 'Leader';
 
   useEffect(() => {
     const unsub = db.subscribeSongs((sngs) => {
@@ -56,10 +57,12 @@ const Songs: React.FC<SongsProps> = ({ onNavigate, onLogout, user, onUpdateAvata
             <h1 className="text-3xl md:text-4xl font-black leading-tight tracking-tight text-slate-900 dark:text-white italic">Canciones y Repertorio</h1>
             <p className="text-slate-500 font-bold text-xs md:text-lg opacity-80 italic">Gestiona el catálogo de adoración con excelencia.</p>
           </div>
-          <button onClick={() => openModal()} className="w-full md:w-auto px-8 py-4 bg-primary text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-2xl flex items-center justify-center gap-2">
-            <span className="material-symbols-outlined !text-lg">add_circle</span>
-            Nueva Canción
-          </button>
+          {isLeader && (
+            <button onClick={() => openModal()} className="w-full md:w-auto px-8 py-4 bg-primary text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-2xl flex items-center justify-center gap-2">
+              <span className="material-symbols-outlined !text-lg">add_circle</span>
+              Nueva Canción
+            </button>
+          )}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -70,12 +73,16 @@ const Songs: React.FC<SongsProps> = ({ onNavigate, onLogout, user, onUpdateAvata
                   <span className="material-symbols-outlined">music_note</span>
                 </div>
                 <div className="flex gap-2">
-                  <button onClick={() => openModal(song)} className="size-10 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-400 hover:text-primary transition-all">
-                    <span className="material-symbols-outlined">edit</span>
-                  </button>
-                  <button onClick={() => handleDeleteSong(song.id)} className="size-10 rounded-xl bg-red-50 dark:bg-red-900/10 flex items-center justify-center text-red-500 hover:bg-red-500 hover:text-white transition-all">
-                    <span className="material-symbols-outlined">delete</span>
-                  </button>
+                  {isLeader && (
+                    <>
+                      <button onClick={() => openModal(song)} className="size-10 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-400 hover:text-primary transition-all">
+                        <span className="material-symbols-outlined">edit</span>
+                      </button>
+                      <button onClick={() => handleDeleteSong(song.id)} className="size-10 rounded-xl bg-red-50 dark:bg-red-900/10 flex items-center justify-center text-red-500 hover:bg-red-500 hover:text-white transition-all">
+                        <span className="material-symbols-outlined">delete</span>
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
               <h3 className="text-xl font-black text-slate-900 dark:text-white mb-1">{song.nombre}</h3>

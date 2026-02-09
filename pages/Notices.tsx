@@ -47,19 +47,29 @@ const Notices: React.FC<NoticesProps> = ({ onNavigate, onLogout, user, onUpdateA
         ) : notifs.map(n => (
           <div
             key={n.id}
-            onClick={() => markAsRead(n.id)}
-            className={`flex gap-6 p-6 rounded-[32px] border transition-all ${n.leido ? 'bg-white dark:bg-slate-900/50 border-slate-100 dark:border-slate-800' : 'bg-primary/5 border-primary shadow-xl shadow-primary/5 cursor-pointer'}`}
+            className={`flex gap-6 p-6 rounded-[32px] border transition-all ${n.leido ? 'bg-white dark:bg-slate-900/50 border-slate-100 dark:border-slate-800' : 'bg-primary/5 border-primary shadow-xl shadow-primary/5'}`}
           >
             <div className={`size-12 rounded-2xl flex items-center justify-center shrink-0 ${n.tipo === 'crear' ? 'bg-green-500 text-white' : n.tipo === 'editar' ? 'bg-blue-500 text-white' : 'bg-red-500 text-white'}`}>
               <span className="material-symbols-outlined !text-xl">{n.tipo === 'crear' ? 'add_circle' : n.tipo === 'editar' ? 'edit' : 'delete'}</span>
             </div>
-            <div>
+            <div className="flex-1" onClick={() => markAsRead(n.id)}>
               <p className={`text-sm md:text-lg font-bold dark:text-white ${!n.leido ? 'font-black' : ''}`}>{n.mensaje}</p>
               <p className="text-[10px] uppercase font-black tracking-widest text-slate-400 mt-2 italic flex items-center gap-2">
                 <span className="material-symbols-outlined !text-xs">schedule</span>
                 {n.timestamp?.toDate ? n.timestamp.toDate().toLocaleString() : 'Reciente'}
               </p>
             </div>
+            {isLeader && (
+              <div className="flex items-start gap-2">
+                <button onClick={async () => {
+                  if (confirm('¿Eliminar esta noticia permanentemente?')) {
+                    await db.deleteNotification(n.id);
+                  }
+                }} className="size-10 rounded-xl bg-red-50 dark:bg-red-900/10 flex items-center justify-center text-red-500 hover:bg-red-500 hover:text-white transition-all">
+                  <span className="material-symbols-outlined">delete</span>
+                </button>
+              </div>
+            )}
           </div>
         ))}
       </div>

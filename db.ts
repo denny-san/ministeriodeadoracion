@@ -170,22 +170,45 @@ export const db = {
 
     // ---- NOTIFICATIONS ----
     subscribeNotifications: (callback: (notifications: MinistryNotification[]) => void) => {
-        const q = query(collection(db_fs, "notifications"), orderBy("timestamp", "desc"), limit(50));
-        return onSnapshot(q, (snapshot) => {
-            callback(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as MinistryNotification)));
-        });
+        if (!db_fs) {
+            console.error("❌ Firestore no inicializado en subscribeNotifications");
+            return () => { };
+        }
+        try {
+            const q = query(collection(db_fs, "notifications"), orderBy("timestamp", "desc"), limit(50));
+            return onSnapshot(q, (snapshot) => {
+                callback(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as MinistryNotification)));
+            });
+        } catch (error) {
+            console.error("❌ Error en subscribeNotifications:", error);
+            return () => { };
+        }
     },
 
     saveNotification: async (notification: Partial<MinistryNotification>) => {
         await addDoc(collection(db_fs, "notifications"), {
             ...notification,
             leido: false,
+            createdBy: auth?.currentUser?.uid || 'system',
             timestamp: serverTimestamp()
         });
     },
 
     markNotificationAsRead: async (id: string) => {
         await setDoc(doc(db_fs, "notifications", id), { leido: true }, { merge: true });
+    },
+
+    deleteNotification: async (id: string) => {
+        if (!db_fs) {
+            console.error("❌ Firestore no inicializado en deleteNotification");
+            return;
+        }
+        try {
+            await deleteDoc(doc(db_fs, "notifications", id));
+            console.log("✅ Notificación eliminada:", id);
+        } catch (error) {
+            console.error("❌ Error eliminando notificación:", error);
+        }
     },
 
     // ---- STORAGE ----
