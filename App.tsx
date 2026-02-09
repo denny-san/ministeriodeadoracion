@@ -64,6 +64,14 @@ const App: React.FC = () => {
               fechaRegistro: new Date().toISOString(),
               activo: true
             };
+
+            // Persistir el documento de usuario en Firestore para que las reglas y permisos funcionen correctamente
+            try {
+              await db.saveUser(userData as any);
+              console.log('✅ Usuario persisted en Firestore:', userData.id);
+            } catch (err) {
+              console.error('❌ Error guardando usuario en Firestore tras login:', err);
+            }
           }
 
           console.log("📋 Rol del usuario:", userData.rol);
