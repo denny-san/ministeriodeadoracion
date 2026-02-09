@@ -95,7 +95,10 @@ export const db = {
             }
         } catch (error) {
             console.error("❌ Error guardando evento:", error);
-            alert("Error al guardar el evento. Por favor intenta de nuevo.");
+            const errorMsg = error instanceof Error ? error.message : String(error);
+            console.error("Código de error:", (error as any)?.code);
+            console.error("Detalles:", (error as any)?.message || errorMsg);
+            alert(`Error al guardar el evento: ${errorMsg}. Por favor intenta de nuevo.`);
         }
     },
 
