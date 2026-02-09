@@ -64,3 +64,37 @@ npm run dev
 - Firebase (Auth, Firestore, Storage)
 - Vite
 - Tailwind CSS (estilos inline)
+
+## Pruebas locales y despliegue de reglas Firestore
+
+1. Instala dependencias e inicia la app en modo desarrollo:
+
+```bash
+npm install
+npm run dev
+```
+
+2. Inicia sesión en Firebase desde la CLI (necesitas `firebase-tools`):
+
+```bash
+npm install -g firebase-tools
+firebase login
+```
+
+3. Para desplegar las reglas de Firestore desde la consola local (asegúrate de tener `firebase.json` y `firestore.rules` en el repo):
+
+```bash
+firebase deploy --only firestore:rules
+```
+
+4. Pruebas manuales recomendadas:
+- Abrir dos sesiones (una con usuario `Leader`, otra con `Musician`).
+- Como `Leader`: crear/editar/eliminar una noticia, canción y un evento.
+- Verificar en la sesión `Musician` que los cambios aparecen instantáneamente sin recargar.
+- Probar confirmaciones de asistencia desde `Musician` y verificar recepción en `Dashboard`.
+
+5. Notas sobre permisos y reglas:
+- Las reglas actualizadas requieren que los `Leader` estén marcados en `/users/{uid}.rol`.
+- Si pruebas en emulador local, puedes usar `firebase emulators:start` para Firestore.
+
+Si quieres, puedo: 1) ejecutar pruebas automatizadas básicas (requiere credenciales), 2) preparar un script para deploy automático de reglas o 3) documentar pasos para crear cuentas de prueba de `Leader` y `Musician`.
