@@ -81,14 +81,18 @@ export const db = {
         try {
             console.log("💾 Guardando evento:", event);
             if (event.id) {
-                await setDoc(doc(db_fs, "events", event.id), {
-                    ...event,
+                // Actualizar evento existente (sin incluir 'id' en el documento)
+                const { id, ...eventData } = event;
+                await setDoc(doc(db_fs, "events", id), {
+                    ...eventData,
                     timestamp: serverTimestamp()
                 }, { merge: true });
                 console.log("✅ Evento actualizado:", event.id);
             } else {
+                // Crear nuevo evento (sin incluir 'id', Firestore lo genera)
+                const { id, ...eventData } = event;
                 const docRef = await addDoc(collection(db_fs, "events"), {
-                    ...event,
+                    ...eventData,
                     timestamp: serverTimestamp()
                 });
                 console.log("✅ Evento creado con ID:", docRef.id);
@@ -140,14 +144,18 @@ export const db = {
         try {
             console.log("💾 Guardando canción:", song);
             if (song.id) {
-                await setDoc(doc(db_fs, "songs", song.id), {
-                    ...song,
+                // Actualizar canción existente (sin incluir 'id' en el documento)
+                const { id, ...songData } = song;
+                await setDoc(doc(db_fs, "songs", id), {
+                    ...songData,
                     timestamp: serverTimestamp()
                 }, { merge: true });
                 console.log("✅ Canción actualizada:", song.id);
             } else {
+                // Crear nueva canción (sin incluir 'id', Firestore lo genera)
+                const { id, ...songData } = song;
                 const docRef = await addDoc(collection(db_fs, "songs"), {
-                    ...song,
+                    ...songData,
                     timestamp: serverTimestamp()
                 });
                 console.log("✅ Canción creada con ID:", docRef.id);
