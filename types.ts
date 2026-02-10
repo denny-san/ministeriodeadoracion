@@ -29,17 +29,21 @@ export interface CalendarEvent {
   hora: string; // HH:MM
   tipo: 'ensayo' | 'culto' | 'actividad';
   notas?: string;
+  songIds?: string[]; // IDs of songs for this event
   creadoPor: string;
   timestamp: any; // Firestore serverTimestamp
 }
 
 export interface Song {
   id: string;
-  nombre: string;
+  nombre: string; // Song title
   artista: string;
   tonalidad: string;
   link?: string;
+  url?: string; // Alternative property name for link
   diaAsignado?: 'jueves' | 'domingo';
+  titulo?: string; // Alternative property name for nombre (for compatibility)
+  genero?: string; // Alternative property
   musicosAsignados?: string[]; // Array of user IDs
   creadoPor: string;
   timestamp: any;

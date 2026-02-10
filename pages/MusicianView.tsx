@@ -120,6 +120,33 @@ const MusicianView: React.FC<MusicianViewProps> = ({ onNavigate, onLogout, user,
                     <p className="text-lg font-black dark:text-white mt-1 uppercase">{activeEvent.tipo}</p>
                   </div>
                 </div>
+
+                {/* Songs for this event */}
+                {activeEvent.songIds && activeEvent.songIds.length > 0 && (
+                  <div className="mt-8 pt-8 border-t border-slate-200 dark:border-slate-700">
+                    <h3 className="text-xl font-black text-slate-900 dark:text-white italic mb-6">🎵 Música para este Ensayo</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {songs
+                        .filter(song => activeEvent.songIds?.includes(song.id))
+                        .map((song) => (
+                          <div key={song.id} className="p-6 rounded-3xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 hover:shadow-lg transition-all">
+                            <div className="flex justify-between items-start">
+                              <div className="flex-1">
+                                <h4 className="font-black text-slate-900 dark:text-white">{song.nombre}</h4>
+                                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{song.artista}</p>
+                                <p className="text-xs text-slate-400 dark:text-slate-500 mt-2 font-medium">Tonalidad: {song.tonalidad}</p>
+                              </div>
+                              {song.link && (
+                                <a href={song.link} target="_blank" rel="noopener noreferrer" className="ml-4 text-primary hover:text-primary-dark transition-colors flex-shrink-0">
+                                  <span className="material-symbols-outlined">play_circle</span>
+                                </a>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="bg-white dark:bg-slate-900 p-20 rounded-[40px] text-center opacity-30">
@@ -153,12 +180,12 @@ const MusicianView: React.FC<MusicianViewProps> = ({ onNavigate, onLogout, user,
                 <div key={song.id} className="p-6 rounded-3xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 hover:shadow-lg transition-all">
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
-                      <h3 className="font-black text-slate-900 dark:text-white text-lg">{song.titulo}</h3>
+                      <h3 className="font-black text-slate-900 dark:text-white text-lg">{song.nombre}</h3>
                       <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{song.artista || 'Artista desconocido'}</p>
-                      <p className="text-xs text-slate-400 dark:text-slate-500 mt-2 font-medium">{song.genero || 'Sin género'}</p>
+                      <p className="text-xs text-slate-400 dark:text-slate-500 mt-2 font-medium">Tonalidad: {song.tonalidad || 'Sin tonalidad'}</p>
                     </div>
-                    {song.url && (
-                      <a href={song.url} target="_blank" rel="noopener noreferrer" className="ml-4 text-primary hover:text-primary-dark transition-colors flex-shrink-0">
+                    {song.link && (
+                      <a href={song.link} target="_blank" rel="noopener noreferrer" className="ml-4 text-primary hover:text-primary-dark transition-colors flex-shrink-0">
                         <span className="material-symbols-outlined">play_circle</span>
                       </a>
                     )}
@@ -174,6 +201,7 @@ const MusicianView: React.FC<MusicianViewProps> = ({ onNavigate, onLogout, user,
           )}
         </div>
       </div>
+    </Layout>
   );
 };
 

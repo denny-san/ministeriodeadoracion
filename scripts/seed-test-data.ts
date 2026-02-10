@@ -97,45 +97,7 @@ async function seedTestData() {
     console.log(`✅ Documento de músico guardado en Firestore\n`);
 
     // 3. Crear eventos de prueba
-    console.log('📅 Creando eventos de prueba...');
-    const today = new Date();
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const tomorrowStr = tomorrow.toISOString().split('T')[0];
-    const nextWeek = new Date(today);
-    nextWeek.setDate(nextWeek.getDate() + 7);
-    const nextWeekStr = nextWeek.toISOString().split('T')[0];
-
-    const events = [
-      {
-        titulo: 'Ensayo General',
-        fecha: tomorrowStr,
-        hora: '19:00',
-        tipo: 'ensayo',
-        notas: 'Ensayo completo del equipo',
-        creadoPor: leaderUser.uid,
-      },
-      {
-        titulo: 'Culto Dominical',
-        fecha: nextWeekStr,
-        hora: '10:00',
-        tipo: 'culto',
-        notas: 'Adoración al domingo',
-        creadoPor: leaderUser.uid,
-      },
-    ];
-
-    for (const event of events) {
-      await addDoc(collection(db, 'events'), {
-        ...event,
-        timestamp: serverTimestamp(),
-      });
-      console.log(`✅ Evento creado: "${event.titulo}" el ${event.fecha}`);
-    }
-    console.log('');
-
-    // 4. Crear canciones de prueba
-    console.log('🎵 Creando canciones de prueba...');
+    console.log('📅 Creando canciones de prueba...');
     const songs = [
       {
         nombre: 'Way Maker',
@@ -155,12 +117,53 @@ async function seedTestData() {
       },
     ];
 
+    const songIds: string[] = [];
     for (const song of songs) {
-      await addDoc(collection(db, 'songs'), {
+      const songRef = await addDoc(collection(db, 'songs'), {
         ...song,
         timestamp: serverTimestamp(),
       });
+      songIds.push(songRef.id);
       console.log(`✅ Canción creada: "${song.nombre}"`);
+    }
+    console.log('');
+
+    console.log('📅 Creando eventos de prueba...');
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowStr = tomorrow.toISOString().split('T')[0];
+    const nextWeek = new Date(today);
+    nextWeek.setDate(nextWeek.getDate() + 7);
+    const nextWeekStr = nextWeek.toISOString().split('T')[0];
+
+    const events = [
+      {
+        titulo: 'Ensayo General',
+        fecha: tomorrowStr,
+        hora: '19:00',
+        tipo: 'ensayo',
+        notas: 'Ensayo completo del equipo',
+        songIds: songIds, // Agregar todas las canciones al ensayo
+        creadoPor: leaderUser.uid,
+      },
+      {
+        titulo: 'Culto Dominical',
+        fecha: nextWeekStr,
+        hora: '10:00',
+        tipo: 'culto',
+        notas: 'Adoración al domingo',
+        songIds: [songIds[0]], // Solo la primera canción para el culto
+        creadoPor: leaderUser.uid,
+      },
+    ];
+
+    for (const event of events) {
+      await addDoc(collection(db, 'events'), {
+        ...event,
+        timestamp: serverTimestamp(),
+      });
+      console.log(`✅ Evento creado: "${event.titulo}" el ${event.fecha}`);
     }
     console.log('');
 
