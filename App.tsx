@@ -121,10 +121,13 @@ const App: React.FC = () => {
     try {
       console.log("📸 Iniciando actualización de foto de perfil...");
       const downloadUrl = await db.uploadProfilePhoto(user.id, newAvatarBase64);
-      const updatedUser = { ...user, fotoPerfil: downloadUrl };
+      // Add timestamp to URL to prevent caching
+      const urlWithTimestamp = `${downloadUrl}?t=${Date.now()}`;
+      const updatedUser = { ...user, fotoPerfil: urlWithTimestamp };
       await db.saveUser(updatedUser);
       setUser(updatedUser);
-      console.log("✅ Foto de perfil actualizada exitosamente");
+      console.log("✅ Foto de perfil actualizada exitosamente:", urlWithTimestamp);
+      alert("✅ Foto de perfil actualizada");
     } catch (error) {
       console.error("❌ Error actualizando foto de perfil:", error);
       alert(`Error al actualizar foto: ${error instanceof Error ? error.message : 'Error desconocido'}`);

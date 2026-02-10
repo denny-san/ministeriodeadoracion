@@ -268,7 +268,7 @@ const Layout: React.FC<LayoutProps> = ({ children, activeView, onNavigate, onLog
                 onClick={() => { setShowProfileMenu(!showProfileMenu); setShowNotifications(false); setIsEditingProfile(false); }}
                 className={`h-9 w-9 md:h-11 md:w-11 rounded-xl border-2 shadow-sm overflow-hidden hover:ring-4 hover:ring-primary/10 transition-all ${showProfileMenu ? 'ring-4 ring-primary/20 border-primary' : 'border-white dark:border-slate-800'}`}
               >
-                <img className="w-full h-full object-cover" src={user?.fotoPerfil || "https://picsum.photos/seed/user/100/100"} alt="User Profile" />
+                <img key={user?.fotoPerfil} className="w-full h-full object-cover" src={user?.fotoPerfil || "https://picsum.photos/seed/user/100/100"} alt="User Profile" />
               </button>
 
               <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleFileChange} />
@@ -331,7 +331,7 @@ const Layout: React.FC<LayoutProps> = ({ children, activeView, onNavigate, onLog
                     <>
                       <div className="p-8 text-center bg-slate-50/50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800">
                         <div className="relative size-20 mx-auto mb-4">
-                          <img src={user?.fotoPerfil} className="size-full rounded-[24px] object-cover shadow-2xl ring-4 ring-white dark:ring-slate-800" alt="Avatar" />
+                          <img key={user?.fotoPerfil} src={user?.fotoPerfil} className="size-full rounded-[24px] object-cover shadow-2xl ring-4 ring-white dark:ring-slate-800" alt="Avatar" />
                           <button onClick={triggerFileUpload} className="absolute -right-2 -bottom-2 size-9 bg-primary text-white rounded-xl shadow-lg flex items-center justify-center hover:scale-110 active:scale-95 transition-all">
                             <span className="material-symbols-outlined !text-xl">photo_camera</span>
                           </button>

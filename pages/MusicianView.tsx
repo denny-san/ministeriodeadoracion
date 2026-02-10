@@ -159,7 +159,7 @@ const MusicianView: React.FC<MusicianViewProps> = ({ onNavigate, onLogout, user,
           <div className="space-y-8">
             <div className="bg-slate-900 rounded-[32px] p-8 text-white shadow-xl relative overflow-hidden">
               <div className="relative z-10 flex flex-col items-center">
-                <img src={user?.fotoPerfil} className="size-24 rounded-[32px] object-cover mb-4 border-4 border-white/10 shadow-2xl" alt="" />
+                <img key={user?.fotoPerfil} src={user?.fotoPerfil} className="size-24 rounded-[32px] object-cover mb-4 border-4 border-white/10 shadow-2xl" alt="" />
                 <h3 className="text-xl font-black">{user?.nombre}</h3>
                 <p className="text-[10px] uppercase font-black tracking-widest text-primary mt-1">{user?.rol}</p>
                 <div className="w-full h-px bg-white/5 my-6"></div>
