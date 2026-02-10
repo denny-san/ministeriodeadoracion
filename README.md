@@ -1,17 +1,19 @@
 # Ministerio de Adoración - Portal de Gestión
 
-## Variables de Entorno Requeridas para Vercel
+## Variables de Entorno Requeridas
 
-Para que la aplicación funcione correctamente en producción (Vercel), debes configurar las siguientes variables de entorno en el panel de Vercel:
+Para que la aplicación use tu proyecto de Firebase en producción o local, define las variables de entorno con prefijo `VITE_` (recomendado) o `NEXT_PUBLIC_` como fallback.
+
+Ejemplo (`.env` o en Vercel/Netlify):
 
 ```
-NEXT_PUBLIC_FIREBASE_API_KEY=AIzaSyAoLjHkXhMWoM9qp540R61gqdvXZ05JSHM
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=ministerioadoracion-73496.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=ministerioadoracion-73496
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=ministerioadoracion-73496.firebasestorage.app
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=320525219331
-NEXT_PUBLIC_FIREBASE_APP_ID=1:320525219331:web:604de89b77f62800548036
-NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=G-F0QY7H8XT4
+VITE_FIREBASE_API_KEY=AIzaSyAoLjHkXhMWoM9qp540R61gqdvXZ05JSHM
+VITE_FIREBASE_AUTH_DOMAIN=ministerioadoracion-73496.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=ministerioadoracion-73496
+VITE_FIREBASE_STORAGE_BUCKET=ministerioadoracion-73496.firebasestorage.app
+VITE_FIREBASE_MESSAGING_SENDER_ID=320525219331
+VITE_FIREBASE_APP_ID=1:320525219331:web:604de89b77f62800548036
+VITE_FIREBASE_MEASUREMENT_ID=G-F0QY7H8XT4
 ```
 
 ### Cómo configurar en Vercel:
@@ -63,7 +65,7 @@ npm run dev
 - TypeScript
 - Firebase (Auth, Firestore, Storage)
 - Vite
-- Tailwind CSS (estilos inline)
+- Tailwind CSS (PostCSS) — ahora está integrado como dependencia y se construye con Vite
 
 ## Pruebas locales y despliegue de reglas Firestore
 
