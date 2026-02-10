@@ -1,0 +1,16 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Usuarios pueden leer y escribir sus propias fotos de perfil
+    match /users/{userId}/photo.jpg {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Permitir lectura de todos los archivos del usuario para usuarios autenticados
+    match /users/{userId}/{allPaths=**} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}

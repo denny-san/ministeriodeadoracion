@@ -143,8 +143,37 @@ const MusicianView: React.FC<MusicianViewProps> = ({ onNavigate, onLogout, user,
             </div>
           </div>
         </div>
+
+        {/* Songs Section */}
+        <div className="bg-white dark:bg-slate-900 p-8 rounded-[40px] border border-slate-100 dark:border-slate-800 shadow-xl">
+          <h2 className="text-2xl font-black text-slate-900 dark:text-white italic mb-6">📻 Repertorio de Canciones</h2>
+          {songs.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {songs.map((song) => (
+                <div key={song.id} className="p-6 rounded-3xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 hover:shadow-lg transition-all">
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <h3 className="font-black text-slate-900 dark:text-white text-lg">{song.titulo}</h3>
+                      <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{song.artista || 'Artista desconocido'}</p>
+                      <p className="text-xs text-slate-400 dark:text-slate-500 mt-2 font-medium">{song.genero || 'Sin género'}</p>
+                    </div>
+                    {song.url && (
+                      <a href={song.url} target="_blank" rel="noopener noreferrer" className="ml-4 text-primary hover:text-primary-dark transition-colors flex-shrink-0">
+                        <span className="material-symbols-outlined">play_circle</span>
+                      </a>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-10 opacity-50">
+              <span className="material-symbols-outlined !text-4xl block mb-3">music_note</span>
+              <p className="font-bold text-slate-500 dark:text-slate-400">No hay canciones disponibles</p>
+            </div>
+          )}
+        </div>
       </div>
-    </Layout>
   );
 };
 

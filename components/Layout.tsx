@@ -61,7 +61,7 @@ const Layout: React.FC<LayoutProps> = ({ children, activeView, onNavigate, onLog
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) {
       console.warn("⚠️ No file selected");
@@ -74,29 +74,38 @@ const Layout: React.FC<LayoutProps> = ({ children, activeView, onNavigate, onLog
       return;
     }
 
+    // Validar tamaño
+    const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+    if (file.size > MAX_SIZE) {
+      alert('La imagen debe ser menor a 5MB');
+      return;
+    }
+
     if (!onUpdateAvatar) {
       console.error("❌ onUpdateAvatar no disponible");
       return;
     }
 
     const reader = new FileReader();
-    reader.onloadend = () => {
+    reader.onloadend = async () => {
       try {
         const base64String = reader.result as string;
         console.log("📸 Foto convertida a base64, subiendo...");
-        onUpdateAvatar(base64String);
-        alert('✅ Foto de perfil actualizada');
+        await onUpdateAvatar(base64String);
+        console.log("✅ Foto de perfil actualizada exitosamente");
         // Limpiar el input para permitir seleccionar la misma foto nuevamente
         e.target.value = '';
       } catch (error) {
         console.error("❌ Error procesando foto:", error);
-        alert('Error al procesar la foto');
+        alert(`Error al procesar la foto: ${error instanceof Error ? error.message : 'Error desconocido'}`);
+        e.target.value = '';
       }
     };
 
     reader.onerror = () => {
       console.error("❌ Error leyendo archivo");
       alert('Error al leer la imagen');
+      e.target.value = '';
     };
 
     reader.readAsDataURL(file);
