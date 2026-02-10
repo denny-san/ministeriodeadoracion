@@ -15,12 +15,12 @@ import {
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "AIzaSyAoLjHkXhMWoM9qp540R61gqdvXZ05JSHM",
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "ministerioadoracion-73496.firebaseapp.com",
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "ministerioadoracion-73496",
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "ministerioadoracion-73496.firebasestorage.app",
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "320525219331",
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || "1:320525219331:web:604de89b77f62800548036",
+  apiKey: process.env.VITE_FIREBASE_API_KEY || process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "AIzaSyAoLjHkXhMWoM9qp540R61gqdvXZ05JSHM",
+  authDomain: process.env.VITE_FIREBASE_AUTH_DOMAIN || process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "ministerioadoracion-73496.firebaseapp.com",
+  projectId: process.env.VITE_FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "ministerioadoracion-73496",
+  storageBucket: process.env.VITE_FIREBASE_STORAGE_BUCKET || process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "ministerioadoracion-73496.firebasestorage.app",
+  messagingSenderId: process.env.VITE_FIREBASE_MESSAGING_SENDER_ID || process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "320525219331",
+  appId: process.env.VITE_FIREBASE_APP_ID || process.env.NEXT_PUBLIC_FIREBASE_APP_ID || "1:320525219331:web:604de89b77f62800548036",
 };
 
 const app = initializeApp(firebaseConfig);
@@ -76,8 +76,16 @@ async function seedTestData() {
       console.log(`✅ Músico creado: ${musicianUser.uid}`);
     } catch (err: any) {
       if (err.code === 'auth/email-already-in-use') {
-        console.log('⚠️ Usuario músico ya existe, usando el existente');
-        musicianUser = { uid: 'musico-uid-placeholder' } as any;
+        console.log('⚠️ Usuario músico ya existe. Intentando resolver UID desde Firestore...');
+        const usuarioKey = musicianEmail.split('@')[0];
+        const usersSnapshot = await (await import('firebase/firestore')).getDocs((await import('firebase/firestore')).collection(db, 'users'));
+        const found = usersSnapshot.docs.find(d => d.data().email === musicianEmail || d.data().usuario === usuarioKey || d.data().id === d.id);
+        if (found) {
+          musicianUser = { uid: found.id } as any;
+          console.log(`✅ Encontrado documento de músico en Firestore: ${found.id}`);
+        } else {
+          throw new Error('El correo ya existe en Auth pero no se encontró documento de usuario en Firestore. Añade manualmente el documento en /users o elimina la cuenta en Auth.');
+        }
       } else {
         throw err;
       }

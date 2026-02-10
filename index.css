@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Project custom styles moved from index.html */
+body { font-family: "Manrope", sans-serif; }
+.material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+
+/* Custom Utilities */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideRight { from { transform: translateX(-100%); } to { transform: translateX(0); } }
+@keyframes slideLeft { from { transform: translateX(100%); } to { transform: translateX(0); } }
+@keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes scaleIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+.animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+.animate-slide-right { animation: slideRight 0.3s ease-out forwards; }
+.animate-slide-left { animation: slideLeft 0.3s ease-out forwards; }
+.animate-slide-down { animation: slideDown 0.3s ease-out forwards; }
+.animate-scale-in { animation: scaleIn 0.2s ease-out forwards; }
+.animate-pulse-slow { animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+
+.soft-focus-bg {
+    background-image: linear-gradient(rgba(246, 246, 248, 0.8), rgba(246, 246, 248, 0.8)), url(https://picsum.photos/seed/church/1920/1080);
+    background-size: cover;
+    background-position: center;
+}
+.dark .soft-focus-bg {
+    background-image: linear-gradient(rgba(17, 22, 33, 0.9), rgba(17, 22, 33, 0.9)), url(https://picsum.photos/seed/church-dark/1920/1080);
+}
